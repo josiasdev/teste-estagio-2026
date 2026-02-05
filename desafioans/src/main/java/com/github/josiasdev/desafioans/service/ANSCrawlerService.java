@@ -55,9 +55,13 @@ public class ANSCrawlerService {
         }
     }
 
-    private void efetuarDownload(String url) {
+    private void efetuarDownload(String url) throws Exception {
         String nome = url.substring(url.lastIndexOf("/") + 1);
-        Path destino = Paths.get(AppConfig.DOWNLOAD_DIR, nome);
+        Path dir = Paths.get(AppConfig.DOWNLOAD_DIR);
+        if (Files.notExists(dir)) {
+            Files.createDirectories(dir);
+        }
+        Path destino = dir.resolve(nome);
         restTemplate.execute(url, org.springframework.http.HttpMethod.GET, null, response -> {
             Files.copy(response.getBody(), destino, StandardCopyOption.REPLACE_EXISTING);
             return destino;
